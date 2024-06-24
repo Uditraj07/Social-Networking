@@ -1,0 +1,250 @@
+<%- include('includes/header') %>
+
+    <div class="container mx-auto ">
+        <div
+            class="bg-white p-4 rounded-lg shadow-md flex flex-col lg:flex-row flex-wrap items-center justify-between gap-y-1">
+            <div class="flex justify-center items-center w-full sm:w-2/3 gap-x-1">
+                <div>
+                    <div class="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center">
+                        <span class="text-gray-700 font-bold">User</span>
+                    </div>
+                </div>
+                <div class="flex-grow">
+                    <input type="text" placeholder="What do you want to ask or share?"
+                        class="w-full p-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            <div class="flex w-full sm:w-[30%] mt-4 sm:mt-0 justify-center gap-x-1">
+                <a class="flex items-center space-x-1 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="text-gray-700">Ask</span>
+                </a>
+                <a class="flex items-center space-x-1 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span class="text-gray-700">Answer</span>
+                </a>
+                <a class="flex items-center space-x-1 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18" />
+                    </svg>
+                    <span class="text-gray-700">Post</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blog Section -->
+    <style>
+        .truncate-text {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+
+    <section class="container mx-auto p-6 flex justify-center">
+        <div>
+            <% if (blogs && blogs.length> 0) { %>
+                <div class="space-y-6">
+                    <% blogs.forEach(blog=> { %>
+                        <span>
+                            <%= blog.likeCount %>
+                        </span>
+                        <div class="w-full sm:w-3/5 mx-auto bg-white p-2 rounded-lg shadow-md">
+                            <div class="mb-2 flex gap-2">
+                            <div class="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-red-600 flex items-center justify-center text-white">
+                                <a href="/user/user-details?username=<%= blog.User.username %>">
+                                    <%= blog.User.fname.charAt(0).toUpperCase() + blog.User.lname.charAt(0).toUpperCase() %>
+                                </a>
+                            </div>
+                            <div>
+                                <a class="text-black mb-4 font-bold text-lg">
+                                    <%= blog.User.fname + ' ' + blog.User.lname %>
+                                </a>
+                            </div>
+                            </div>
+                            <h2 class="text-base sm:text-xl font-semibold mb-2">
+                                <%= blog.title %>
+                            </h2>
+                            <% if (blog.coverImage) { %>
+                                <div class="w-full flex justify-center mb-2 p-2">
+                                    <img src="uploads/<%= blog.coverImage %>" alt="<%= blog.title %> Cover Image"
+                                        class="w-full sm:w-[90%] h-auto rounded-md">
+                                </div>
+                            <% } %>
+                                    <div>
+                                        <p class="text-gray-700 truncate-text" id="desc-<%= blog.id %>">
+                                            <%= blog.body %>
+                                        </p>
+                                        <a href="javascript:void(0);" class="text-blue-500 hover:underline"
+                                            onclick="toggleReadMore(<%= blog.id %>)" id="toggle-<%= blog.id %>">
+                                            Read More
+                                        </a>
+                                    </div>
+                                    <!-- Icons section -->
+                                    <div class="flex justify-between items-center mt-4 pt-2 border-t border-gray-200">
+                                        <div class="flex items-center space-x-2">
+                                            <button
+                                                class="like-button flex items-center space-x-1 hover:text-blue-500 <%= likedPosts.includes(blog.id)? 'text-blue-500' : 'text-gray-600' %>"
+                                                data-post-id="<%= blog.id %>">
+                                                <i class="fas fa-thumbs-up"></i>
+                                                <span>Like</span>
+                                                <span><%=likesMap[blog.id] %></span>
+                                            </button>           
+                                            <button
+                                                class="dislike-button flex items-center space-x-1  hover:text-blue-500 <%= dislikedPosts.includes(blog.id)? 'text-blue-500' : 'text-gray-600' %>"
+                                                data-post-id="<%= blog.id %>" data-post-id="<%= blog.id %>">
+                                                <i class="fas fa-thumbs-down"></i>
+                                                <span>Dislike </span>
+                                            </button>
+                                        </div>
+                                        <div class="flex items-center space-x-4">
+                                            <button class="comment"
+                                                class="flex items-center space-x-1 text-gray-600 hover:text-blue-500">
+                                                <i class="fas fa-comment-alt"></i>
+                                                <span>291</span> <!-- Placeholder for comment count -->
+                                            </button>
+                                            
+                                            <button
+                                                class="flex items-center space-x-1 text-gray-600 hover:text-blue-500">
+                                                <i class="fas fa-share"></i>
+                                                
+                                            </button>
+                                        </div>
+                                        
+                                    </div>
+                            </div>
+                        <% }) %> 
+                </div>
+                <% } else { %>
+                    <p class="text-gray-700">No blogs found.</p>
+                <% } %>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function toggleReadMore(blogId) {
+            const desc = document.getElementById('desc-' + blogId);
+            const toggle = document.getElementById('toggle-' + blogId);
+
+            if (desc.classList.contains('truncate-text')) {
+                desc.classList.remove('truncate-text');
+                toggle.textContent = 'Read Less';
+            } else {
+                desc.classList.add('truncate-text');
+                toggle.textContent = 'Read More';
+            }
+        }
+
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                try {
+                    const postId = button.getAttribute('data-post-id');
+                    let response;
+                    if (button.classList.contains('text-gray-600')) {
+                        if (button.nextElementSibling.classList.contains('text-blue-500')){
+                            let dis_response=   await axios.post('/dislike/remove-dislike', {}, {
+                                headers: { 'postid': postId },
+                                withCredentials: true
+                            });
+                            if(dis_response){
+                                button.nextElementSibling.classList.add('text-gray-600');
+                                button.nextElementSibling.classList.remove('text-blue-500');
+                            }
+                        }
+                        response = await axios.post('/like/add-like', {}, {
+                            headers: { 'postid': postId },
+                            withCredentials: true
+                        });
+                        if (response.data.message == true) {
+                            button.classList.remove('text-gray-600');
+                            button.classList.add('text-blue-500');
+                            let likeCount = button.lastElementChild;
+                            let TotalLikeCount = likeCount.innerText;
+                            likeCount.innerText = Number(TotalLikeCount) + 1 + '';
+                        } else {
+                            window.location.href = '/user/login';
+                        }
+                    } else if (button.classList.contains('text-blue-500')) {
+                        response = await axios.post('/like/remove-like', {}, {
+                            headers: { 'postid': postId },
+                            withCredentials: true
+                        });
+                        if (response.data.message == true) {
+                            button.classList.add('text-gray-600');
+                            button.classList.remove('text-blue-500');
+                           let likeCount = button.lastElementChild;
+                            let TotalLikeCount = likeCount.innerText;
+                            likeCount.innerText = Number(TotalLikeCount) - 1 + '';
+                            
+                        } else {
+                            window.location.href = '/user/login';
+                        }
+                    }
+                } catch (error) {
+                    window.location.href = '/user/login';
+                    console.log(error);
+                }
+            });
+        });
+
+        document.querySelectorAll('.dislike-button').forEach(button => {
+                button.addEventListener('click', async (event) => {
+                    try {
+                        const postId = button.getAttribute('data-post-id');
+                        let response;
+                        if (button.classList.contains('text-gray-600')) {
+                           if (button.previousElementSibling.classList.contains('text-blue-500')) {
+                                let like_response = await axios.post('/like/remove-like', {}, {
+                                   headers: { 'postid': postId },
+                                   withCredentials: true
+                               });
+                                if (like_response) {
+                                    button.previousElementSibling.classList.add('text-gray-600');
+                                    button.previousElementSibling.classList.remove('text-blue-500');
+                                    let likeCount = button.previousElementSibling.lastElementChild;
+                                    let TotalLikeCount = likeCount.innerText;
+                                    likeCount.innerText = Number(TotalLikeCount) - 1 + '';
+                                }
+                            }
+                            response = await axios.post('/dislike/add-dislike', {}, {
+                                headers: { 'postid': postId },
+                                withCredentials: true
+                            });
+                            if (response.data.message == true) {
+                                button.classList.remove('text-gray-600');
+                                button.classList.add('text-blue-500');
+                            } else {
+                                window.location.href = '/user/login';
+                            }
+                        } else if (button.classList.contains('text-blue-500')) {
+                            response = await axios.post('/dislike/remove-dislike', {}, {
+                                headers: { 'postid': postId },
+                                withCredentials: true
+                            });
+                            if (response.data.message == true) {
+                                button.classList.add('text-gray-600');
+                                button.classList.remove('text-blue-500');
+                            } else {
+                                window.location.href = '/user/login';
+                            }
+                        }
+                    } catch (error) {
+                        window.location.href = '/user/login';
+                        console.log(error);
+                    }
+                });
+            });
+    </script>
+
+    <%- include('includes/footer') %>

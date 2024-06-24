@@ -1,0 +1,36 @@
+<%- include('includes/header') %>
+    <section>
+        <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
+            <h1 class="text-2xl font-bold mb-4">Add New Blog</h1>
+            <% if (typeof message !=='undefined' && message) { %>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span class="block sm:inline">
+                        <%= message %>
+                    </span>
+                </div>
+                <% } %>
+                    <form action="add-blog" method="post"  class="space-y-4" enctype="multipart/form-data"> 
+                        <div>
+                            <label for="title" class="block text-sm font-medium text-gray-700">Blog Title</label>
+                            <input type="text" name="title" id="title" required
+                                class="mt-1 p-2 border border-gray-300 rounded-md w-full">
+                        </div>
+                        <div>
+                            <label for="body" class="block text-sm font-medium text-gray-700">Blog Body</label>
+                            <textarea name="body" id="body" rows="10" required
+                                class="mt-1 p-2 border border-gray-300 rounded-md w-full"></textarea>
+                        </div>
+                        <div>
+                            <label for="coverImage" class="block text-sm font-medium text-gray-700">Cover Image</label>
+                            <input type="file" name="coverImage" id="coverImage"
+                                class="mt-1 p-2 border border-gray-300 rounded-md w-full">
+                        </div>
+                        <div>
+                            <button type="submit"
+                                class="w-full bg-blue-500 text-white p-2 rounded-md font-semibold hover:bg-blue-700">Add
+                                Blog</button>
+                        </div>
+                    </form>
+        </div>
+    </section>
+    <%- include('includes/footer') %>

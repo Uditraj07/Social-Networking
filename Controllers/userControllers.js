@@ -72,50 +72,74 @@ exports.register = async (req, res, next) => {
     }
 };
 
-exports.userDetails = async(req, res, next) => {
+exports.userDetails = async (req, res, next) => {
     try {
         const uname = req.query.username;
         const token = req.cookies.user_id;
         const userId = getUserId(token);
-  
+
         const userDetails = await User.findOne({
-            attributes: {
-                    exclude: [''] 
-                },
             where: { username: uname },
             include: [{
                 model: Blog,
-                attributes: {
-                    exclude: ['UserId'] 
-                }
+                attributes: { exclude: ['UserId'] }
             }]
         });
 
-        const isFollowing = await Follow.findOne({
-        where: {
-            user_id: userId,
-            follower_id: userDetails.id 
+        if (!userDetails) {
+            return res.status(404).render('profile_details', { message: 'User not found', cookies: req.cookies });
         }
+
+        const isFollowing = await Follow.findOne({
+            where: {
+                user_id: userId,
+                follower_id: userDetails.id
+            }
         });
 
-        const isSame = userDetails.id == userId?true:false;
-        console.log(isSame)
+        const isSame = userDetails.id == userId;
 
-        
-        const totalFollowers = await Follow.count({
-            where: { follower_id: userDetails.id }
-            });
+        const totalFollowers = await Follow.findAll({
+            where: { follower_id: userDetails.id },
+            include: [{
+                model: User,
+                as: 'User', 
+                attributes: ['id', 'fname', 'lname', 'username', 'email']
+            }]
+        });
 
-        const totalFollowing = await Follow.count({
-            where: { user_id: userDetails.id }
-            });
+        const totalFollowing = await Follow.findAll({
+            where: { user_id: userDetails.id },
+            include: [{
+                model: User,
+                as: 'Follower', 
+                attributes: ['id', 'fname', 'lname', 'username', 'email']
+            }]
+        });
 
-    res.render('profile_details', { cookies: req.cookies,userDetails:userDetails,isFollowing: !!isFollowing ,totalFollowers: totalFollowers,
-      totalFollowing: totalFollowing,isSame:isSame });
+        const currentUserFollowing = await Follow.findAll({
+            where: { user_id: userId },
+            include: [{
+                model: User,
+                as: 'Follower',
+                attributes: ['id', 'fname', 'lname', 'username', 'email']
+            }]
+        });
+
+        res.render('profile_details', {
+            cookies: req.cookies,
+            userDetails: userDetails,
+            isFollowing: !!isFollowing,
+            totalFollowers: totalFollowers,
+            totalFollowing: totalFollowing,
+            currentUserFollowing: currentUserFollowing,
+            isSame: isSame
+        });
     } catch (error) {
         console.log(error);
-    }    
-}
+        return res.render('profile_details', { message: 'Internal server error, please try again later', cookies: req.cookies });
+    }
+};
 
 
 function crypt_password(password, salt) {

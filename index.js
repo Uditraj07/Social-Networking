@@ -102,19 +102,12 @@ Dislike.belongsTo(User);
 Blog.hasMany(Dislike);
 Dislike.belongsTo(Blog);
 
-User.belongsToMany(User, {
-  through: Follow,
-  as: 'Following',
-  foreignKey: 'follower_id',
-  otherKey: 'user_id'
-});
 
-User.belongsToMany(User, {
-  through: Follow,
-  as: 'Followers',
-  foreignKey: 'user_id',
-  otherKey: 'follower_id'
-});
+User.hasMany(Follow, { foreignKey: 'user_id', as: 'Following' });
+User.hasMany(Follow, { foreignKey: 'follower_id', as: 'Followers' });
+
+Follow.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+Follow.belongsTo(User, { foreignKey: 'follower_id', as: 'Follower' });
 
 sequelize.sync();
 

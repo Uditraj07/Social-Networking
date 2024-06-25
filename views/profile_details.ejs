@@ -1,30 +1,30 @@
 <%- include('includes/header', { title: userDetails.username }) %>
-    <style>
-        .truncate-text {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-    </style>
+<style>
+    .truncate-text {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
 
-    <section class="max-w-6xl mx-auto sm:mx-0 sm:ml-24">
-        <div class="p-4 overflow-x-hidden">
-            <div class="rounded-lg p-2 flex flex-col sm:space-x-6 mb-6">
-                <div class="flex flex-col sm:flex-row">
-                    <div class="flex">
-                        <div
-                            class="w-16 h-16 rounded-full text-black flex justify-center items-center bg-red-500 font-bold text-lg mb-4 sm:mb-0">
-                            <%= userDetails.fname[0] + userDetails.lname[0] %>
-                        </div>
-                        <h1 class="text-2xl font-bold" id="username">
-                            <%= userDetails.username %>
-                        </h1>
-                        </div>
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-center sm:space-x-4">
-                        <% if(!isSame){%>
-                            <div class="flex space-x-2 mt-2 sm:mt-0">
+<section class="max-w-6xl mx-auto sm:mx-0 sm:ml-24">
+    <div class="p-4 overflow-x-hidden">
+        <div class="rounded-lg p-2 flex flex-col sm:space-x-6 mb-6">
+            <div class="flex flex-col sm:flex-row">
+                <div class="flex">
+                    <div
+                        class="w-16 h-16 rounded-full text-black flex justify-center items-center bg-red-500 font-bold text-lg mb-4 sm:mb-0">
+                        <%= userDetails.fname[0] + userDetails.lname[0] %>
+                    </div>
+                    <h1 class="text-2xl font-bold" id="username">
+                        <%= userDetails.username %>
+                    </h1>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-center sm:space-x-4">
+                    <% if(!isSame) { %>
+                        <div class="flex space-x-2 mt-2 sm:mt-0">
                             <button class="px-4 py-2 bg-blue-500 text-white rounded-full" id="follow">
                                 <% if (isFollowing) { %>
                                     Following
@@ -34,8 +34,8 @@
                             </button>
                             <button class="px-4 py-2 bg-slate-500 text-black rounded-full">Message</button>
                             <button class="px-4 py-2 bg-gray-200 text-gray-800 rounded-full">...</button>
-                            </div>
-                        <%} else{%>
+                        </div>
+                        <% } else { %>
                             <div class="flex space-x-2 mt-2 sm:mt-0">
                                 <button class="px-4 py-2 bg-blue-500 text-white rounded-full">
                                     Edit Profile
@@ -43,81 +43,186 @@
                                 <button class="px-4 py-2 bg-slate-500 text-black rounded-full">Add Story</button>
                                 <button class="px-4 py-2 bg-gray-200 text-gray-800 rounded-full">...</button>
                             </div>
-                            <%}%>
-                            </div>
-                            </div>
-                            <div class="flex flex-col">
-                    <div class="flex space-x-3 sm:space-x-6 mt-2 text-sm sm:text-base ml-2">
-                        <div>
-                            <span class="font-bold">
-                                <%= userDetails.Blogs.length %>
-                            </span> posts
-                        </div>
-                        <div>
-                        <a href=""> <span class="font-bold" id="total_followers">
-                                <%=totalFollowers%>
-                            </span> followers</a>
+                            <% } %>
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <div class="flex space-x-3 sm:space-x-6 mt-2 text-sm sm:text-base ml-2">
+                    <div>
+                        <span class="font-bold">
+                            <%= userDetails.Blogs.length %>
+                        </span> posts
+                    </div>
+                    <div>
+                        <% if (totalFollowers.length> 0) { %>
+                            <a href="#" onclick="openModal(event)">
+                                <span class="font-bold" id="total_followers">
+                                    <%= totalFollowers.length %>
+                                </span> followers
+                            </a>
+                            <% } else { %>
+                                <span class="font-bold" id="total_followers">
+                                    <%= totalFollowers.length %>
+                                </span> followers
+                                <% } %>
+                    </div>
+                    <div>
+                        <% if (totalFollowing.length> 0) { %>
+                            <a href="#" onclick="openFollowingModal(event)">
+                                <span class="font-bold" id="total_following">
+                                    <%= totalFollowing.length %>
+                                </span> following
+                            </a>
+                            <% } else { %>
+                                <span class="font-bold" id="total_following">
+                                    <%= totalFollowing.length %>
+                                </span> following
+                                <% } %>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-2 ml-2">
+                <p class="font-semibold capitalize">
+                    <%= userDetails.fname + ' ' + userDetails.lname %>
+                </p>
+                <p class="text-gray-500 text-xs sm:text-sm">Followed by laxmi_nigam90</p>
+            </div>
+        </div>
+    </div>
+    <div class="flex justify-center space-x-4 mb-6">
+        <button class="text-gray-600 font-semibold uppercase">Posts</button>
+    </div>
+    </div>
+    <div>
+        <div class="flex flex-wrap">
+            <div>
+                <% userDetails.Blogs.forEach(blog=> { %>
+                    <div class="w-full sm:w-3/5 bg-white p-2 border-b-solid border-b-[1px] border-b-slate-500 mt-2">
+                        <div class="mb-2 flex gap-2">
+                            <div
+                                class="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-red-600 flex items-center justify-center text-white">
+                                <%= userDetails.fname.charAt(0).toUpperCase() +
+                                    userDetails.lname.charAt(0).toUpperCase() %>
                             </div>
                             <div>
-                                <a href=""><span class="font-bold">
-                                    <%=totalFollowing%>
-                                </span> following</a>
-                                </div>
-                                </div>
-                                <div class="mt-2 ml-2">
-                                    <p class="font-semibold capitalize">
-                                        <%= userDetails.fname + ' ' + userDetails.lname %>
-                                    </p>
-                                    <p class="text-gray-500 text-xs sm:text-sm">Followed by laxmi_nigam90</p>
-                                </div>
-                                </div>
-                                </div>
-            <div class="flex justify-center space-x-4 mb-6">
-                <button class="text-gray-600 font-semibold uppercase">Posts</button>
-            </div>
-            </div>
-
-        <div>
-            <div class="flex flex-wrap">
-                <div>
-                    <% userDetails.Blogs.forEach(blog=> { %>
-                        <div class="w-full sm:w-3/5 bg-white p-2 border-b-solid border-b-[1px] border-b-slate-500 mt-2">
-                            <div class="mb-2 flex gap-2">
-                                <div class="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-red-600 flex items-center justify-center text-white">
-                                    <%= userDetails.fname.charAt(0).toUpperCase() + userDetails.lname.charAt(0).toUpperCase() %>
-                                </div>
+                                <a class="text-black mb-4 font-bold text-lg">
+                                    <%= userDetails.fname + ' ' + userDetails.lname %>
+                                </a>
+                            </div>
+                        </div>
+                        <h2 class="text-base sm:text-xl font-semibold mb-2">
+                            <%= blog.title %>
+                        </h2>
+                        <% if (blog.coverImage) { %>
+                            <div class="w-full flex justify-center mb-2 p-2">
+                                <img src="/uploads/<%= blog.coverImage %>" alt="<%= blog.title %> Cover Image"
+                                    class="w-full sm:w-[90%] h-auto rounded-md">
+                            </div>
+                            <% } %>
                                 <div>
-                                    <a class="text-black mb-4 font-bold text-lg">
-                                        <%= userDetails.fname + ' ' + userDetails.lname %>
+                                    <p class="text-gray-700 truncate-text" id="desc-<%= blog.id %>">
+                                        <%= blog.body %>
+                                    </p>
+                                    <a href="javascript:void(0);" class="text-blue-500 hover:underline"
+                                        onclick="toggleReadMore(<%= blog.id %>)" id="toggle-<%= blog.id %>">Read More
                                     </a>
                                 </div>
-                                </div>
-                                <h2 class="text-base sm:text-xl font-semibold mb-2">
-                                    <%= blog.title %>
-                                </h2>
-                                <% if (blog.coverImage) { %>
-                                    <div class="w-full flex justify-center mb-2 p-2">
-                                        <img src="/uploads/<%= blog.coverImage %>" alt="<%= blog.title %> Cover Image"
-                                            class="w-full sm:w-[90%] h-auto rounded-md">
-                                    </div>
-                            <% } %>
-                            <div>
-                                <p class="text-gray-700 truncate-text" id="desc-<%= blog.id %>">
-                                    <%= blog.body %>
-                                </p>
-                                <a href="javascript:void(0);" class="text-blue-500 hover:underline" onclick="toggleReadMore(<%= blog.id %>)"
-                                    id="toggle-<%= blog.id %>">Read More </a>
-                            </div>
-                                </div>
+                    </div>
                     <% }) %>
-                </div>
-                </div>
-                </div>
-                </section>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!-- Modal -->
+<div class="items-center justify-center h-screen w-full hidden fixed top-0 bottom-0" id="total_follower_modal">
+    <div class="bg-white w-96 rounded-lg shadow-lg p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Followers</h2>
+            <button class="text-gray-600" onclick="closeModal()">&times;</button>
+        </div>
 
-    <script>
+        <div class="mb-4">
+            <input type="text" placeholder="Search"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-200">
+        </div>
+
+        <div class="overflow-y-auto h-full sm:h-64">
+            <div class="flex flex-col justify-center items-center">
+
+                <% totalFollowers.forEach(follower=> { %>
+                    <div class="flex items-center justify-between py-2 border-b w-full">
+                        <div class="flex items-center space-x-5">
+                            <a
+                                class="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-red-600 flex items-center justify-center text-white">
+                                <%= follower.User.fname.charAt(0).toUpperCase() +
+                                    follower.User.lname.charAt(0).toUpperCase() %>
+                            </a>
+                            <div>
+                                <p class="font-bold">
+                                    <%= follower.User.username %>
+                                </p>
+                                <p class="text-sm text-gray-500">
+                                    no bio
+                                </p>
+                            </div>
+                        </div>
+                        <button type="submit"
+                        class="px-4 py-2 bg-blue-500 text-white rounded-full"><% if (currentUserFollowing.some(f=> f.Follower.id === follower.User.id)) { %>Following<% } else { %>Follow<% } %></button>
+                    </div>
+                    <% }); %>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="items-center justify-center h-screen w-full hidden fixed top-0 bottom-0" id="total_following_modal">
+    <div class="bg-white w-96 rounded-lg shadow-lg p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Following</h2>
+            <button class="text-gray-600" onclick="closeFollowingModal()">&times;</button>
+        </div>
+
+        <div class="mb-4">
+            <input type="text" placeholder="Search"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-200">
+        </div>
+
+        <div class="overflow-y-auto h-full sm:h-64">
+            <div class="flex flex-col justify-center items-center">
+
+                <% totalFollowing.forEach(following=> { %>
+                    <div class="flex items-center justify-between py-2 border-b w-full">
+                        <div class="flex items-center space-x-5">
+                            <a
+                                class="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-red-600 flex items-center justify-center text-white">
+                                <%= following.Follower.fname.charAt(0).toUpperCase() +
+                                    following.Follower.lname.charAt(0).toUpperCase() %>
+                            </a>
+                            <div>
+                                <p class="font-bold">
+                                    <%= following.Follower.username %>
+                                </p>
+                                <p class="text-sm text-gray-500">
+                                    no bio
+                                </p>
+                            </div>
+                        </div>
+                      <button type="submit"
+                        class="px-4 py-2 bg-blue-500 text-white rounded-full"><% if (currentUserFollowing.some(f=> f.Follower.id === following.Follower.id)) { %>Following<% } else { %>Follow<% } %></button>
+                    </div>
+                    <% }); %>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
         function toggleReadMore(blogId) {
             const desc = document.getElementById('desc-' + blogId);
             const toggle = document.getElementById('toggle-' + blogId);
@@ -175,4 +280,33 @@
             alert('Error following the user');
         }
     });
-            </script>
+
+</script>
+<script>
+    function openModal(event) {
+        event.preventDefault();
+        const followers_count_modal = document.getElementById('total_follower_modal');
+        followers_count_modal.classList.add('flex');
+        followers_count_modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+        const followers_count_modal = document.getElementById('total_follower_modal');
+        followers_count_modal.classList.remove('flex');
+        followers_count_modal.classList.add('hidden');
+    }
+
+    function openFollowingModal(event) {
+        event.preventDefault();
+        const followers_count_modal = document.getElementById('total_following_modal');
+        followers_count_modal.classList.add('flex');
+        followers_count_modal.classList.remove('hidden');
+    }
+
+    function closeFollowingModal() {
+        const followers_count_modal = document.getElementById('total_following_modal');
+        followers_count_modal.classList.remove('flex');
+        followers_count_modal.classList.add('hidden');
+    }
+
+</script>

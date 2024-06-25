@@ -19,7 +19,7 @@ router.get('/logout', (req, res) => {
     return res.redirect('/');
 })
 
-router.get('/user-details', userController.userDetails);
+router.get('/user-details',userAuth, userController.userDetails);
 
 
 

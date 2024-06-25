@@ -23,7 +23,8 @@
                         </h1>
                         </div>
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-center sm:space-x-4">
-                        <div class="flex space-x-2 mt-2 sm:mt-0">
+                        <% if(!isSame){%>
+                            <div class="flex space-x-2 mt-2 sm:mt-0">
                             <button class="px-4 py-2 bg-blue-500 text-white rounded-full" id="follow">
                                 <% if (isFollowing) { %>
                                     Following
@@ -34,6 +35,15 @@
                             <button class="px-4 py-2 bg-slate-500 text-black rounded-full">Message</button>
                             <button class="px-4 py-2 bg-gray-200 text-gray-800 rounded-full">...</button>
                             </div>
+                        <%} else{%>
+                            <div class="flex space-x-2 mt-2 sm:mt-0">
+                                <button class="px-4 py-2 bg-blue-500 text-white rounded-full">
+                                    Edit Profile
+                                </button>
+                                <button class="px-4 py-2 bg-slate-500 text-black rounded-full">Add Story</button>
+                                <button class="px-4 py-2 bg-gray-200 text-gray-800 rounded-full">...</button>
+                            </div>
+                            <%}%>
                             </div>
                             </div>
                             <div class="flex flex-col">
@@ -44,14 +54,14 @@
                             </span> posts
                         </div>
                         <div>
-                            <span class="font-bold" id="total_followers">
+                        <a href=""> <span class="font-bold" id="total_followers">
                                 <%=totalFollowers%>
-                            </span> followers
+                            </span> followers</a>
                             </div>
                             <div>
-                                <span class="font-bold">
+                                <a href=""><span class="font-bold">
                                     <%=totalFollowing%>
-                                </span> following
+                                </span> following</a>
                                 </div>
                                 </div>
                                 <div class="mt-2 ml-2">
@@ -97,7 +107,7 @@
                                 </p>
                                 <a href="javascript:void(0);" class="text-blue-500 hover:underline" onclick="toggleReadMore(<%= blog.id %>)"
                                     id="toggle-<%= blog.id %>">Read More </a>
-                                </div>
+                            </div>
                                 </div>
                     <% }) %>
                 </div>

@@ -86,7 +86,7 @@ exports.userDetails = async(req, res, next) => {
             include: [{
                 model: Blog,
                 attributes: {
-                    exclude: ['UserId'] // Exclude userId from Blog attributes
+                    exclude: ['UserId'] 
                 }
             }]
         });
@@ -94,9 +94,13 @@ exports.userDetails = async(req, res, next) => {
         const isFollowing = await Follow.findOne({
         where: {
             user_id: userId,
-            follower_id: userDetails.id // Assuming you need to access ID here
+            follower_id: userDetails.id 
         }
         });
+
+        const isSame = userDetails.id == userId?true:false;
+        console.log(isSame)
+
         
         const totalFollowers = await Follow.count({
             where: { follower_id: userDetails.id }
@@ -107,7 +111,7 @@ exports.userDetails = async(req, res, next) => {
             });
 
     res.render('profile_details', { cookies: req.cookies,userDetails:userDetails,isFollowing: !!isFollowing ,totalFollowers: totalFollowers,
-      totalFollowing: totalFollowing });
+      totalFollowing: totalFollowing,isSame:isSame });
     } catch (error) {
         console.log(error);
     }    

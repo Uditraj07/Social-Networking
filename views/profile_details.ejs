@@ -159,7 +159,7 @@
                                     follower.User.lname.charAt(0).toUpperCase() %>
                             </a>
                             <div>
-                                <p class="font-bold">
+                                <p class="font-bold user_name" >
                                     <%= follower.User.username %>
                                 </p>
                                 <p class="text-sm text-gray-500">
@@ -167,11 +167,11 @@
                                 </p>
                             </div>
                         </div>
+                        <% if(cookies.user_name!=follower.User.username){%>
                         <button type="submit"
-                        class="px-4 py-2 bg-blue-500 text-white rounded-full"><% if (currentUserFollowing.some(f=> f.Follower.id === follower.User.id)) { %>Following<% } else { %>Follow<% } %></button>
+                        class="px-4 py-2 bg-blue-500 text-white rounded-full follow_list"><% if (currentUserFollowing.some(f=> f.Follower.username === follower.User.username)) { %>Following<% } else { %>Follow<% } %></button><%}%>
                     </div>
-                    <% }); %>
-
+                <% }); %>
             </div>
         </div>
     </div>
@@ -202,7 +202,7 @@
                                     following.Follower.lname.charAt(0).toUpperCase() %>
                             </a>
                             <div>
-                                <p class="font-bold">
+                                <p class="font-bold user_name" >
                                     <%= following.Follower.username %>
                                 </p>
                                 <p class="text-sm text-gray-500">
@@ -210,8 +210,14 @@
                                 </p>
                             </div>
                         </div>
-                      <button type="submit"
-                        class="px-4 py-2 bg-blue-500 text-white rounded-full"><% if (currentUserFollowing.some(f=> f.Follower.id === following.Follower.id)) { %>Following<% } else { %>Follow<% } %></button>
+                        <% if(cookies.user_name!=following.Follower.username){%>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-full follow_list">
+                        <% if (currentUserFollowing.some(f=> f.Follower.username === following.Follower.username)) { %>
+                            Following
+                            <% } else { %>
+                                Follow
+                                <% } %>
+                    </button><%}%>
                     </div>
                     <% }); %>
 
@@ -309,4 +315,46 @@
         followers_count_modal.classList.add('hidden');
     }
 
+</script>
+
+<script>
+    let followList=document.querySelectorAll('.follow_list');
+    followList.forEach((follow)=>{
+        follow.addEventListener('click',async()=>{
+            try {
+                let user_name = follow.parentElement.querySelector('.user_name');
+                if (follow.innerText === 'Following') {
+    
+                    let response = await axios.post('/follow/remove-folllower', {}, {
+                        headers: {
+                            'username': user_name.innerText
+                        }
+                    });
+                    if (response.data.message === true) {
+                        alert('Successfully unfollow the user');
+                        follow.innerText = 'Follow';
+                    }
+                    else {
+                        window.location.href = '/user/login'
+                    }
+                }
+                else {
+                    let response = await axios.post('/follow/add-folllower', {}, {
+                        headers: {
+                            'username': user_name.innerText
+                        }
+                    });
+                    if (response.data.message === true) {
+                        alert('Successfully followed the user');
+                        follow.innerText = 'Following';
+                    }
+                    else {
+                        window.location.href = '/user/login'
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        })
+    })
 </script>

@@ -20,7 +20,8 @@ exports.signin = async (req, res, next) => {
                 return res.render('login', { message: 'Invalid Credential' ,cookies: req.cookies});
             } else {
                 let token = setUserId(user_info.dataValues.id);
-                res.cookie('user_id',token);
+                res.cookie('user_id', token);
+                res.cookie('user_name',user_info.dataValues.username)
                 return res.redirect('/')
             }
         } else {
@@ -104,17 +105,23 @@ exports.userDetails = async (req, res, next) => {
             include: [{
                 model: User,
                 as: 'User', 
-                attributes: ['id', 'fname', 'lname', 'username', 'email']
-            }]
+                attributes: [ 'fname', 'lname', 'username', 'email']
+            }],
+            attributes: {
+                exclude: ['user_id', 'follower_id']
+            }
         });
 
         const totalFollowing = await Follow.findAll({
             where: { user_id: userDetails.id },
             include: [{
                 model: User,
-                as: 'Follower', 
+                as: 'Follower',
                 attributes: ['id', 'fname', 'lname', 'username', 'email']
-            }]
+            }],
+            attributes: {
+                exclude: ['user_id', 'follower_id']
+            }
         });
 
         const currentUserFollowing = await Follow.findAll({
@@ -122,7 +129,7 @@ exports.userDetails = async (req, res, next) => {
             include: [{
                 model: User,
                 as: 'Follower',
-                attributes: ['id', 'fname', 'lname', 'username', 'email']
+                attributes: ['fname', 'lname', 'username', 'email']
             }]
         });
 
@@ -135,6 +142,7 @@ exports.userDetails = async (req, res, next) => {
             currentUserFollowing: currentUserFollowing,
             isSame: isSame
         });
+        
     } catch (error) {
         console.log(error);
         return res.render('profile_details', { message: 'Internal server error, please try again later', cookies: req.cookies });

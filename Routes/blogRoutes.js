@@ -25,7 +25,9 @@ router.get('/add-blog',userAuth, (req, res, next) => {
     return res.render('add_blog', {cookies:req.cookies});
 })
 
-router.post('/add-blog', userAuth,upload.single("coverImage") ,blogController.create_blog);
+router.post('/add-blog', userAuth, upload.single("coverImage"), blogController.create_blog);
+
+router.post('/delete-blog', userAuth,blogController.delete_blog);
 
 router.get('/', blogController.allBlog);
 

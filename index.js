@@ -93,13 +93,13 @@ Blog.belongsTo(User);
 User.hasMany(Like);
 Like.belongsTo(User);
 
-Blog.hasMany(Like);
+Blog.hasMany(Like, {onDelete: 'CASCADE'});
 Like.belongsTo(Blog);
 
 User.hasMany(Dislike);
 Dislike.belongsTo(User);
 
-Blog.hasMany(Dislike);
+Blog.hasMany(Dislike,{onDelete: 'CASCADE'});
 Dislike.belongsTo(Blog);
 
 

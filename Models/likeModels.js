@@ -11,7 +11,7 @@ const Like = sequelize.define('Like', {
     liked_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
-    }
+    },
 }, {
     tableName: 'Likes',
     timestamps: false

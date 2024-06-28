@@ -1,7 +1,10 @@
 const blogModel = require('../Models/blogModel');
 const User = require('../Models/userModel');
+const fs = require('fs');
+const path = require('path');
 const dotenv = require('dotenv');
  const {setUserId,getUserId}=require('../Middleware/auth');
+const { where } = require('sequelize');
 dotenv.config();
 
 
@@ -45,3 +48,33 @@ exports.allBlog = async (req, res, next) => {
         res.status(500).send('Internal Server Error');
     }
 };
+
+exports.delete_blog = async (req, res, next) => {
+    let blog_id = req.headers['id'];
+    console.log(blog_id);
+    let blog_details = await blogModel.findOne({
+        where: {
+            id: blog_id,
+        }
+    });
+
+    let imagePath = blog_details.dataValues.coverImage;
+
+    let response=await blogModel.destroy({ where:{
+        id:blog_id
+        }
+    })
+    if (response) {
+        if (imagePath) {
+            let fullImagePath = path.join(__dirname, '..','public', 'uploads', imagePath);
+            fs.unlink(fullImagePath, (err) => {
+                if (err) {
+                    console.error('Error deleting image:', err);
+                } else {
+                    console.log('Image deleted successfully');
+                }
+            });
+        }
+        return res.json({ message: true });
+    }
+}

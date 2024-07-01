@@ -25,8 +25,7 @@ exports.create_blog = async (req, res, next) => {
         };
 
         let response = await blogModel.create(blog_details);
-        console.log(response);
-        res.redirect('/blog');  
+        res.redirect('/');  
     } catch (error) {
         console.log(error);
         res.render('add_blog', { message: 'Internal server error, please try again later', cookies: req.cookies });
@@ -39,7 +38,7 @@ exports.allBlog = async (req, res, next) => {
             attributes: { exclude: ['UserId'] },
             include: [{
                 model: User,
-                attributes: ['username','UserId']  // Include only the username attribute from the User model
+                attributes: ['username','UserId']
             }]
         });
         res.render('index', { cookies: req.cookies, blogs: blogs });
@@ -51,7 +50,7 @@ exports.allBlog = async (req, res, next) => {
 
 exports.delete_blog = async (req, res, next) => {
     let blog_id = req.headers['id'];
-    console.log(blog_id);
+
     let blog_details = await blogModel.findOne({
         where: {
             id: blog_id,
@@ -59,7 +58,11 @@ exports.delete_blog = async (req, res, next) => {
     });
 
     let imagePath = blog_details.dataValues.coverImage;
-
+    const token = req.cookies.user_id;
+    const userId = getUserId(token);
+    if (userId != blog_details.dataValues.UserId) {
+        res.send("Oops Unauthorised access");
+    }
     let response=await blogModel.destroy({ where:{
         id:blog_id
         }
@@ -76,5 +79,41 @@ exports.delete_blog = async (req, res, next) => {
             });
         }
         return res.json({ message: true });
+    }
+}
+
+exports.edit_blog = async (req, res, next) => {
+    try {
+        let blog_id = req.params.param;
+        let blog_Details = await blogModel.findOne({ where: { id: blog_id } });
+        const token = req.cookies.user_id;
+        const userId = getUserId(token);
+        if (userId != blog_Details.dataValues.UserId) {
+            res.send("Oops Unauthorised access");
+        }
+        res.render('edit_blog', {cookies:req.cookies,blog_details:blog_Details});
+        
+    } catch (error) {
+        console.log(error);
+    }
+}
+exports.update_blog = async (req, res, next) => {
+    try {
+       let blog_id = req.body.id;
+        let blog_Details = await blogModel.findOne({ where: { id: blog_id } });
+        const token = req.cookies.user_id;
+        const userId = getUserId(token);
+        if (userId != blog_Details.dataValues.UserId) {
+            res.send("Oops Unauthorised access");
+        }
+        blog_Details.title = req.body.title;
+        blog_Details.body = req.body.body;
+        let response =await blog_Details.save();
+        if (response) {
+            res.json({ message: true});
+        }
+
+    } catch (error) {
+        console.log(error);
     }
 }

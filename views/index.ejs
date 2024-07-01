@@ -61,16 +61,17 @@
                         </span>
                         <div class="w-full sm:w-3/5 mx-auto bg-white p-2 rounded-lg shadow-md">
                             <div class="mb-2 flex gap-2">
-                            <div class="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-red-600 flex items-center justify-center text-white">
-                                <a href="/user/user-details?username=<%= blog.User.username %>">
-                                    <%= blog.User.fname.charAt(0).toUpperCase() + blog.User.lname.charAt(0).toUpperCase() %>
-                                </a>
-                            </div>
-                            <div>
-                                <a class="text-black mb-4 font-bold text-lg">
-                                    <%= blog.User.fname + ' ' + blog.User.lname %>
-                                </a>
-                            </div>
+                                <div class="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-red-600 flex items-center justify-center text-white">
+                                    <a href="/user/user-details?username=<%= blog.User.username %>">
+                                        <%= blog.User.fname.charAt(0).toUpperCase() + blog.User.lname.charAt(0).toUpperCase() %>
+                                    </a>
+                                </div>
+                                <div>
+                                    <a class="text-black mb-4 font-bold text-lg">
+                                        <%= blog.User.fname + ' ' + blog.User.lname %>
+                                    </a></br>
+                                    <span class="time-ago" data-date="<%= blog.createdAt %>">Posted Before</span>
+                                </div>
                             </div>
                             <h2 class="text-base sm:text-xl font-semibold mb-2">
                                 <%= blog.title %>
@@ -245,6 +246,37 @@
                     }
                 });
             });
+    </script>
+    <script>
+        // Function to update time ago every second
+        function updateTimeAgo() {
+            const timeElements = document.querySelectorAll('.time-ago');
+            timeElements.forEach(element => {
+                const dateString = element.getAttribute('data-date');
+                const date = new Date(dateString);
+                const now = new Date();
+                const seconds = Math.floor((now - date) / 1000);
+
+                let displayText;
+                if (seconds < 60) {
+                    displayText = `${seconds} seconds ago`;
+                } else if (seconds < 3600) {
+                    const minutes = Math.floor(seconds / 60);
+                    displayText = `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+                } else if (seconds < 86400) {
+                    const hours = Math.floor(seconds / 3600);
+                    displayText = `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+                } else {
+                    const days = Math.floor(seconds / 86400);
+                    displayText = `${days} day${days !== 1 ? 's' : ''} ago`;
+                }
+                element.textContent = displayText;
+            });
+        }
+
+        updateTimeAgo();
+
+        setInterval(updateTimeAgo, 1000);
     </script>
 
     <%- include('includes/footer') %>

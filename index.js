@@ -12,6 +12,7 @@ const app = express();
 
 // Request body
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(cookieParser());
 
 // Serve static files from the 'public' folder
@@ -35,13 +36,16 @@ app.set('view engine', 'ejs');
 app.get('/', async (req, res) => {
     try {
         const blogs = await Blog.findAll({
-        attributes: {
-            exclude: ['UserId']
+            attributes: {
+                exclude: ['UserId']
             },
             include: [{
                 model: User,
                 attributes: ['username', 'fname', 'lname']
-            }]
+            }],
+            order: [
+                ['createdAt', 'DESC'] // Assuming you want to sort by creation date
+            ]
         });
         const token = req.cookies.user_id;
         const likesByBlogId = await Like.findAll({

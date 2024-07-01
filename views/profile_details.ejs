@@ -43,7 +43,6 @@
                                     Edit Profile
                                 </button>
                                 <button class="px-4 py-2 bg-slate-500 text-black rounded-full">Add Story</button>
-                                <button class="px-4 py-2 bg-gray-200 text-gray-800 rounded-full">...</button>
                             </div>
                             <% } %>
                 </div>
@@ -118,8 +117,8 @@
                                 </button>
                                 <div id="menu-<%= blog.id %>"
                                     class="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-md hidden">
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                        onclick="editBlog(<%= blog.id %>,event)">Edit</a>
+                                    <a href="/blog/edit-blog/<%=blog.id%>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        >Edit</a>
                                     <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         onclick="deleteBlog(<%= blog.id %>,event)">Delete</a>
                                 </div>
@@ -320,12 +319,12 @@
             document.querySelectorAll('[id^=menu-]').forEach(el => el.classList.add('hidden'));
         });
 
-        async function editBlog(id) {
-            
-        }
-
+       
         async function deleteBlog(id,event) {
             let conf=confirm('Are you confirm to delete');
+            if(!conf){
+                return;
+            }
             
             let response = await axios.post('/blog/delete-blog', {}, {
                 headers: {

@@ -27,7 +27,11 @@ router.get('/add-blog',userAuth, (req, res, next) => {
 
 router.post('/add-blog', userAuth, upload.single("coverImage"), blogController.create_blog);
 
-router.post('/delete-blog', userAuth,blogController.delete_blog);
+router.post('/delete-blog', userAuth, blogController.delete_blog);
+
+router.get('/edit-blog/:param', userAuth, blogController.edit_blog);
+
+router.post('/update-blog',userAuth, blogController.update_blog);
 
 router.get('/', blogController.allBlog);
 

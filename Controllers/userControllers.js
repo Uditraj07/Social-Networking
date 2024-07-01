@@ -142,12 +142,13 @@ exports.userDetails = async (req, res, next) => {
             currentUserFollowing: currentUserFollowing,
             isSame: isSame
         });
-        
+
     } catch (error) {
         console.log(error);
         return res.render('profile_details', { message: 'Internal server error, please try again later', cookies: req.cookies });
     }
 };
+
 
 
 function crypt_password(password, salt) {

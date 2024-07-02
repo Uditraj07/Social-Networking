@@ -21,7 +21,9 @@ router.get('/logout', (req, res) => {
 
 
 
-router.get('/user-details',userAuth, userController.userDetails);
+router.get('/user-details', userAuth, userController.userDetails);
+
+router.get('/dashboard', userAuth,userController.dashboard);
 
 
 

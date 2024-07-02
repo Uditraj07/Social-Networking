@@ -5,6 +5,9 @@ const {setUserId,getUserId}=require('../Middleware/auth');
 const User = require('../Models/userModel');
 const Blog = require('../Models/blogModel');
 const Follow = require('../Models/followersModel')
+const Like = require('../Models/likeModels');
+const DisLike = require('../Models/dislikeModel');
+const { where } = require('sequelize');
 dotenv.config();
 
 exports.signin = async (req, res, next) => {
@@ -34,6 +37,9 @@ exports.signin = async (req, res, next) => {
     }
 }
 
+exports.edit_profile = async (req, res, next)=>{
+    
+}
 
 exports.register = async (req, res, next) => {
     try {
@@ -148,6 +154,39 @@ exports.userDetails = async (req, res, next) => {
         return res.render('profile_details', { message: 'Internal server error, please try again later', cookies: req.cookies });
     }
 };
+
+exports.dashboard = async (req, res, next) => {
+    try {
+
+        let token = req.cookies.user_id;
+        let user_id = getUserId(token);
+        
+        const totalPosts = await Blog.count({ where: { UserId: user_id } });
+        const totalFollowers = await Follow.count({ where: { follower_id: user_id } });
+        const totalLikes = await Like.count({
+                include: [{
+                model: Blog,
+                 where: { UserId: user_id }
+            }]
+        });
+        const totalDisLikes = await DisLike.count({
+            include: [{
+                model: Blog,
+                where: { UserId: user_id }
+            }]
+        });
+        res.render('dashboard', {
+            cookies: req.cookies,
+            totalPosts,
+            totalFollowers,
+            totalLikes,
+            totalDisLikes,
+        });
+        
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 
 

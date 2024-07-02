@@ -1,0 +1,128 @@
+<style>
+    /* Optional custom styles */
+    .sidebar-link-active {
+        background-color: #1a202c;
+    }
+
+    .sidebar-link-active:hover {
+        background-color: #1a202c;
+    }
+</style>
+<%- include('includes/header') %>
+<!-- Header -->
+<header class="bg-gray-800 text-white p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold">Welcome <a href="/user/user-details?username=<%= cookies.user_name%>"
+            class="text-blue-600 hover:text-red-500">
+            <%= cookies.user_name%>
+        </a></h1>
+</header>
+
+<div class="container mx-auto px-4 py-6">
+    <div class="flex flex-col lg:flex-row gap-4">
+        <nav class="w-full lg:w-1/5 bg-gray-900 text-white p-4">
+            <ul>
+                <li>
+                    <a href="/user/dashboard"
+                        class="block py-2 px-4 text-white hover:bg-gray-800 sidebar-link-active" id="dashboard">Dashboard</a>
+                </li>
+                <li>
+                    <a href="/user/user-details?username=<%= cookies.user_name%>"
+                        class="block py-2 px-4 text-white hover:bg-gray-800">Profile</a>
+                </li>
+                <li>
+                    <a href="#" class="block py-2 px-4 text-white hover:bg-gray-800" id="message">Messages</a>
+                </li>
+                <li>
+                    <a href="/user/logout" class="block py-2 px-4 text-white hover:bg-gray-800">Logout</a>
+                </li>
+            </ul>
+        </nav>
+        <main class="h-screen w-full lg:w-4/5 p-4 " id="das_content">
+            <div class="bg-white rounded-lg shadow-lg p-4 mb-4">
+                <h2 class="text-lg font-semibold mb-2">User Statistics</h2>
+                <div class="flex flex-wrap justify-around gap-4">
+                    <div class="text-center">
+                        <span class="text-lg font-bold"><%=totalPosts%></span>
+                        <p class="text-gray-500">Total Posts</p>
+                    </div>
+                    <div class="text-center">
+                        <span class="text-lg font-bold"><%=totalFollowers%></span>
+                        <p class="text-gray-500">Total Followers</p>
+                    </div>
+                    <div class="text-center">
+                        <span class="text-lg font-bold"><%=totalLikes%></span>
+                        <p class="text-gray-500">Total Likes</p>
+                    </div>
+                    <div class="text-center">
+                        <span class="text-lg font-bold">
+                            <%=totalDisLikes%>
+                        </span>
+                        <p class="text-gray-500">Total Dislikes</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div class=" h-screen w-full lg:w-4/5 p-4 hidden" id="message_box">
+            <!-- Sidebar for users -->
+            <div class="w-full bg-white border-r border-gray-200">
+                <div class="p-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold">Chats</h2>
+                </div>
+                <div class="p-4 space-y-4">
+                    <!-- User List Item -->
+                    <div class="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
+                        <div class="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0"></div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-900">User 1</p>
+                            <p class="text-xs text-gray-500">Last message...</p>
+                        </div>
+                    </div>
+                    <!-- Repeat above block for more users -->
+                    <div class="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
+                        <div class="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0"></div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-900">User 2</p>
+                            <p class="text-xs text-gray-500">Last message...</p>
+                        </div>
+                    </div>
+                    <!-- Add more users as needed -->
+                </div>
+            </div>
+        
+            <!-- Main chat area -->
+           
+        </div>
+
+
+    </div>
+</div>
+<script>
+    let message=document.getElementById('message');
+    let message_box=document.getElementById('message_box');
+    let dashboard=document.getElementById('dashboard');
+    let das_box=document.getElementById('das_content');
+    
+    message.addEventListener('click',(event)=>{
+        event.preventDefault();
+        if (!das_box.classList.contains('hidden')) {
+            das_box.classList.add('hidden');
+        }
+        if(message_box.classList.contains('hidden')){
+            message_box.classList.remove('hidden');
+            message_box.classList.add('flex');
+        }
+    })
+    dashboard.addEventListener('click',(event)=>{
+        event.preventDefault();
+        if(!message_box.classList.contains('hidden')){
+            message_box.classList.add('hidden');
+        }
+        if (das_box.classList.contains('hidden')) {
+            das_box.classList.remove('hidden');
+        }
+    })
+</script>
+
+</body>
+
+</html>

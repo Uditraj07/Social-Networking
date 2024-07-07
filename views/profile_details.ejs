@@ -187,31 +187,7 @@
         </div>
         <!-- Chat Area -->
         <div class="flex-1 p-4 overflow-y-auto" id="chat-con">
-            <% all_messages.forEach((message)=> { %>
-                <% if (message.Sender.username===userDetails.username) { %>
-                    <div class="flex items-start mb-4">
-                        <div class="mr-4 w-10 h-10 bg-gray-300 rounded-full flex justify-center items-center p-2">
-                            <%= userDetails.fname[0] + '' + userDetails.lname[0] %>
-                        </div>
-                        <div class="bg-white p-2 rounded-lg shadow">
-                            <p class="text-sm">
-                                <%= message.content %>
-                            </p>
-                            <span class="text-xs text-gray-500">
-                                <%= message.createdAt %>
-                            </span>
-                        </div>
-                    </div>
-                    <% } else { %>
-                        <!-- Outgoing Message -->
-                        <div class="flex items-start justify-end mb-4">
-                            <div class="bg-green-200 p-2 rounded-lg shadow">
-                                <p class="text-sm"><%= message.content %></p>
-                                <span class="text-xs text-gray-500"><%= message.createdAt %></span>
-                            </div>
-                        </div>
-                <% } %>
-            <% }) %>
+            
         </div>
         <!-- Input Area -->
         <div class="border-t border-gray-200 p-4 flex items-center bg-white">
@@ -490,13 +466,15 @@
     })
 </script>
 
+
+
 <script>
     let message=document.getElementById('message');
     let x_mark=document.getElementById('x_mark');
     
     let chat_container=document.querySelector('.chat-container');
     message.addEventListener('click',(event)=>{
-        
+     
         if(chat_container.classList.contains('-bottom-full')){
             chat_container.classList.remove('-bottom-full');
             chat_container.classList.add('bottom-0');
@@ -529,6 +507,7 @@
                 const strTime = hours + ':' + minutesStr + ' ' + ampm;
                 return strTime;
             }
+
         async function sendMessage(){
                 let timeSpan= getCurrentTime();
                 let username=document.getElementById('username').innerText;
@@ -548,7 +527,6 @@
                     const timestampSpan = document.createElement('span');
                     timestampSpan.classList.add('text-xs', 'text-gray-500');
                     timestampSpan.textContent = timeSpan;
-                    
 
                     innerDiv.appendChild(messageParagraph);
                     innerDiv.appendChild(timestampSpan);
@@ -560,6 +538,101 @@
                 else{
                     window.location.href='/user/login';
                 }
-            
             }
+        async function getAllMessage() {
+            try {
+                let chat_container = document.getElementById('chat-con');
+                let username = document.getElementById('username').innerText.trim();
+                let response = await axios.get('/message/get-all-messages', {
+                    headers: {
+                        'username': username
+                         }
+                    });
+                if (response.data.message === true) {
+                    let message_details = response.data.all_messages;
+                    message_details.forEach((message)=>{
+                    if(message.Sender.username===username){
+                        let messageContainer=createIncominggMessageElement(message.content,message.Sender, message.createdAt);
+                            chat_container.appendChild(messageContainer);
+                        }
+                        else{
+                            let messageContainer =  createOutgoingMessageElement(message.content,message.createdAt);
+                            chat_container.appendChild(messageContainer);
+                        }
+                    })
+                    setInterval(() => {
+                        newMessage();
+                    }, 1000)
+                            
+                }
+                else{
+                     window.location.href='/user/login';
+                }
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+        }
+         getAllMessage();
+         
+        function createIncominggMessageElement(message, Sender, createdAt) {
+                const messageContainer = document.createElement('div');
+                messageContainer.classList.add('flex', 'items-start', 'mb-4','outgoing');
+                messageContainer.setAttribute('time',createdAt);
+                const userIconContainer = document.createElement('div');
+                userIconContainer.classList.add('mr-4', 'w-10', 'h-10', 'bg-gray-300', 'rounded-full', 'flex', 'justify-center', 'items-center', 'p-2');
+                userIconContainer.textContent = Sender.fname[0] + '' + Sender.lname[0];
+                const messageContentContainer = document.createElement('div');
+                messageContentContainer.classList.add('bg-white', 'p-2', 'rounded-lg', 'shadow');
+                const messageContent = document.createElement('p');
+                messageContent.classList.add('text-sm');
+                messageContent.textContent = message;
+                const messageTimestamp = document.createElement('span');
+                messageTimestamp.classList.add('text-xs', 'text-gray-500');
+                messageTimestamp.textContent = new Date(createdAt).toLocaleString();
+                messageContentContainer.appendChild(messageContent);
+                messageContentContainer.appendChild(messageTimestamp);
+                messageContainer.appendChild(userIconContainer);
+                messageContainer.appendChild(messageContentContainer);
+                return messageContainer;
+            }
+        function createOutgoingMessageElement(message, createdAt) {
+                const messageContainer = document.createElement('div');
+                messageContainer.classList.add('flex', 'items-start', 'justify-end', 'mb-4');
+                const messageContentContainer = document.createElement('div');
+                messageContentContainer.classList.add('bg-green-200', 'p-2', 'rounded-lg', 'shadow');
+                const messageContent = document.createElement('p');
+                messageContent.classList.add('text-sm');
+                messageContent.textContent = message;
+                const messageTimestamp = document.createElement('span');
+                messageTimestamp.classList.add('text-xs', 'text-gray-500');
+                messageTimestamp.textContent = new Date(createdAt).toLocaleString();
+                messageContentContainer.appendChild(messageContent);
+                messageContentContainer.appendChild(messageTimestamp);
+                messageContainer.appendChild(messageContentContainer);
+                return messageContainer;
+            }
+        async function newMessage(){
+            let all_outgoing=document.querySelectorAll('.outgoing');
+            
+          
+            let last_outgoing=all_outgoing[all_outgoing.length-1];
+            let username=document.getElementById('username').innerText.trim();
+            console.log(last_outgoing);
+           
+            let createdAt=last_outgoing.getAttribute('time');
+            let response = await axios.get('/message/new-message', {
+                headers: {
+                    'username': username,
+                    'createdAt': createdAt
+                }
+            });
+            
+            if(response.data.message==true && response.data.new_message!=null){
+                let new_message= response.data.new_message;
+                let messageContainer= createIncominggMessageElement(new_message.content,new_message.Sender,new_message.createdAt);
+                let chat_container = document.getElementById('chat-con');
+                chat_container.appendChild(messageContainer);
+            }
+        }
+        
 </script>

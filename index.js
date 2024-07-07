@@ -5,15 +5,24 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const { getUserId, setUserId } = require('./Middleware/auth'); 
 const sequelize = require('./utils/database');
+const cors = require('cors');
 const { Sequelize } = require('sequelize');
+const socketIo = require('socket.io');
+const http = require('http');
+
 
 dotenv.config();
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
 
 // Request body
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(cors({
+    origin:"*",
+}))
 
 // Serve static files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
@@ -24,12 +33,15 @@ const blogRoutes = require('./Routes/blogRoutes');
 const likeRoutes = require('./Routes/likeRoutes');
 const dislikeRoutes = require('./Routes/dislikeRoutes');
 const followRoutes = require('./Routes/followRoutes');
+const messageRoutes = require('./Routes/messageRoutes');
 // Models
 const User = require('./Models/userModel');
 const Blog = require('./Models/blogModel');
 const Like = require('./Models/likeModels');
 const Dislike = require('./Models/dislikeModel');
 const Follow = require('./Models/followersModel');
+const Message = require('./Models/messageModel');
+
 
 app.set('view engine', 'ejs');
 
@@ -89,6 +101,7 @@ app.use('/like', likeRoutes);
 app.use('/dislike', dislikeRoutes);
 app.use('/user', userRoutes);
 app.use('/follow', followRoutes);
+app.use('/message', messageRoutes);
 
 // Associations
 User.hasMany(Blog);
@@ -107,11 +120,16 @@ Blog.hasMany(Dislike,{onDelete: 'CASCADE'});
 Dislike.belongsTo(Blog);
 
 
-User.hasMany(Follow, { foreignKey: 'user_id', as: 'Following' });
-User.hasMany(Follow, { foreignKey: 'follower_id', as: 'Followers' });
+User.hasMany(Follow, { foreignKey: 'user_id', as: 'Following'});
+User.hasMany(Follow, { foreignKey: 'follower_id', as: 'Followers'});
 
-Follow.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
-Follow.belongsTo(User, { foreignKey: 'follower_id', as: 'Follower' });
+Follow.belongsTo(User, { foreignKey: 'user_id', as: 'User'});
+Follow.belongsTo(User, { foreignKey: 'follower_id', as: 'Follower'});
+
+User.hasMany(Message, { foreignKey: 'sender_id', as: 'SentMessages'});
+User.hasMany(Message, { foreignKey: 'receiver_id', as: 'ReceivedMessages'});
+Message.belongsTo(User, { foreignKey: 'sender_id', as: 'Sender' });
+Message.belongsTo(User, { foreignKey: 'receiver_id', as: 'Receiver'});
 
 sequelize.sync();
 

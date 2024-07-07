@@ -7,10 +7,10 @@ const User = require('../Models/userModel');
 exports.addFollowers = async(req, res, next) => {
    try {
         const token = req.cookies.user_id;
-    const userId = getUserId(token);
+        const userId = getUserId(token);
        const username = req.headers['username'];
        console.log(username)
-   const follower = await User.findOne({ where: { username: username } });
+        const follower = await User.findOne({ where: { username: username } });
 
     if (!follower) {
       return res.status(404).json({ error: 'User not found' });

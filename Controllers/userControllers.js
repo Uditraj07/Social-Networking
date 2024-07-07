@@ -7,7 +7,9 @@ const Blog = require('../Models/blogModel');
 const Follow = require('../Models/followersModel')
 const Like = require('../Models/likeModels');
 const DisLike = require('../Models/dislikeModel');
+const Message=require('../Models/messageModel');
 const { where } = require('sequelize');
+const { Op } = require('sequelize');
 dotenv.config();
 
 exports.signin = async (req, res, next) => {
@@ -93,6 +95,9 @@ exports.userDetails = async (req, res, next) => {
             }]
         });
 
+        let receiverId = userDetails.id;
+        
+
         if (!userDetails) {
             return res.status(404).render('profile_details', { message: 'User not found', cookies: req.cookies });
         }
@@ -139,6 +144,26 @@ exports.userDetails = async (req, res, next) => {
             }]
         });
 
+        const all_messages = await Message.findAll({
+                where: {
+                    [Op.or]: [
+                        {
+                            sender_id: userId,
+                            receiver_id: receiverId
+                        },
+                        {
+                            sender_id: receiverId,
+                            receiver_id: userId
+                        }
+                    ]
+                },
+                include: [
+                    { model: User, as: 'Sender', attributes: ['username'] },
+                    { model: User, as: 'Receiver', attributes: ['username'] }
+                ],
+            attributes: ['id', 'createdAt', 'content'],
+            order: [['createdAt', 'ASC']]
+        });
         res.render('profile_details', {
             cookies: req.cookies,
             userDetails: userDetails,
@@ -146,7 +171,8 @@ exports.userDetails = async (req, res, next) => {
             totalFollowers: totalFollowers,
             totalFollowing: totalFollowing,
             currentUserFollowing: currentUserFollowing,
-            isSame: isSame
+            isSame: isSame,
+            all_messages:all_messages
         });
 
     } catch (error) {

@@ -7,6 +7,20 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
+    #chat-con::-webkit-scrollbar {
+        width: 2px; 
+    }
+    #chat-con::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    #chat-con::-webkit-scrollbar-thumb {
+        background: #888; 
+        border-radius: 4px; 
+    }
+    #chat-con::-webkit-scrollbar-thumb:hover {
+        background: #555; 
+    }
 </style>
 
 <section class="max-w-6xl mx-auto sm:mx-0 sm:ml-24">
@@ -150,61 +164,61 @@
     </div>
 </section>
 
-<div class="w-[98%] mx-auto sm:w-auto flex items-center justify-center chat-container fixed right-0 sm:right-3 -bottom-full transition-all duration-300 ease-in-out">
-    <div class="w-full max-w-3xl bg-white shadow-lg rounded-lg overflow-hidden flex flex-col relative">
-        <span class="absolute top-1 right-1 cursor-pointer" id="x_mark"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-            class="size-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-        </svg></span>
+<div
+    class="mx-auto  flex items-center justify-center chat-container fixed right-0 sm:right-3 -bottom-full transition-all duration-300 ease-in-out h-[482px] w-full sm:w-72">
+    <div class="w-full h-full bg-white shadow-lg rounded-lg overflow-hidden flex flex-col relative">
+        <span class="absolute top-1 right-1 cursor-pointer" id="x_mark">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+        </span>
         <!-- Header -->
         <div class="bg-green-600 text-white p-4 flex items-center">
-            <div class="w-10 h-10 bg-gray-300 rounded-full mr-4 text-center flex items-center justify-center"><%= userDetails.fname[0]+userDetails.lname[0]%></div>
+            <div class="w-10 h-10 bg-gray-300 rounded-full mr-4 text-center flex items-center justify-center">
+                <%= userDetails.fname[0] + userDetails.lname[0] %>
+            </div>
             <div>
-                <h2 class="text-lg font-semibold"><%= userDetails.fname+' '+userDetails.lname%></h2>
+                <h2 class="text-lg font-semibold">
+                    <%= userDetails.fname + ' ' + userDetails.lname %>
+                </h2>
                 <p class="text-sm">online</p>
             </div>
         </div>
         <!-- Chat Area -->
-        <div class="flex-1 p-4 overflow-y-auto"
-            >
-            <!-- Message -->
-            <div class="flex items-start mb-4">
-                <div class="mr-4 w-10 h-10 bg-gray-300 rounded-full"></div>
-                <div class="bg-white p-2 rounded-lg shadow">
-                    <p class="text-sm">Hey</p>
-                    <span class="text-xs text-gray-500">5:09 PM</span>
-                </div>
-            </div>
-            <!-- Outgoing Message -->
-            <div class="flex items-start justify-end mb-4">
-                <div class="bg-green-200 p-2 rounded-lg shadow">
-                    <p class="text-sm">8PM I think...</p>
-                    <span class="text-xs text-gray-500">5:34 PM</span>
-                </div>
-            </div>
-            <!-- Incoming Message -->
-            <div class="flex items-start mb-4">
-                <div class="mr-4 w-10 h-10 bg-gray-300 rounded-full"></div>
-                <div class="bg-white p-2 rounded-lg shadow">
-                    <p class="text-sm">Testing visual challenge</p>
-                    <span class="text-xs text-gray-500">5:35 PM</span>
-                </div>
-            </div>
-            <!-- Outgoing Message -->
-            <div class="flex items-start justify-end mb-4">
-                <div class="bg-green-200 p-2 rounded-lg shadow">
-                    <p class="text-sm">Cool :)</p>
-                    <span class="text-xs text-gray-500">5:35 PM</span>
-                </div>
-            </div>
-            <!-- More Messages -->
-            <!-- Repeat the above block for more messages -->
+        <div class="flex-1 p-4 overflow-y-auto" id="chat-con">
+            <% all_messages.forEach((message)=> { %>
+                <% if (message.Sender.username===userDetails.username) { %>
+                    <div class="flex items-start mb-4">
+                        <div class="mr-4 w-10 h-10 bg-gray-300 rounded-full flex justify-center items-center p-2">
+                            <%= userDetails.fname[0] + '' + userDetails.lname[0] %>
+                        </div>
+                        <div class="bg-white p-2 rounded-lg shadow">
+                            <p class="text-sm">
+                                <%= message.content %>
+                            </p>
+                            <span class="text-xs text-gray-500">
+                                <%= message.createdAt %>
+                            </span>
+                        </div>
+                    </div>
+                    <% } else { %>
+                        <!-- Outgoing Message -->
+                        <div class="flex items-start justify-end mb-4">
+                            <div class="bg-green-200 p-2 rounded-lg shadow">
+                                <p class="text-sm"><%= message.content %></p>
+                                <span class="text-xs text-gray-500"><%= message.createdAt %></span>
+                            </div>
+                        </div>
+                <% } %>
+            <% }) %>
         </div>
         <!-- Input Area -->
         <div class="border-t border-gray-200 p-4 flex items-center bg-white">
             <input type="text" placeholder="Type a message"
-                class="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            <button class="ml-4 p-2 bg-green-600 text-white rounded-full">
+                class="flex-1 p-2 h-12 min-h-[2.5rem] max-h-[5rem] w-72 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                id="content_field" required>
+            <button class="ml-4 p-2 bg-green-600 text-white rounded-full" onclick="sendMessage()">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -504,4 +518,48 @@
             }
         })
 
+        function getCurrentTime() {
+                const now = new Date();
+                let hours = now.getHours();
+                const minutes = now.getMinutes();
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12; // the hour '0' should be '12'
+                const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+                const strTime = hours + ':' + minutesStr + ' ' + ampm;
+                return strTime;
+            }
+        async function sendMessage(){
+                let timeSpan= getCurrentTime();
+                let username=document.getElementById('username').innerText;
+                let content=document.getElementById('content_field').value;
+                let message_details={username:username,content:content}
+                let response=await axios.post('/message/add-message', message_details);
+                if(response.data.message=true){
+                    
+                    let chat_con=document.getElementById('chat-con');
+                    const outerDiv = document.createElement('div');
+                    outerDiv.classList.add('flex', 'items-start', 'justify-end', 'mb-4');
+                    const innerDiv = document.createElement('div');
+                    innerDiv.classList.add('bg-green-200', 'p-2', 'rounded-lg', 'shadow');
+                    const messageParagraph = document.createElement('p');
+                    messageParagraph.classList.add('text-sm');
+                    messageParagraph.textContent = content;
+                    const timestampSpan = document.createElement('span');
+                    timestampSpan.classList.add('text-xs', 'text-gray-500');
+                    timestampSpan.textContent = timeSpan;
+                    
+
+                    innerDiv.appendChild(messageParagraph);
+                    innerDiv.appendChild(timestampSpan);
+                    outerDiv.appendChild(innerDiv);
+                    chat_con.appendChild(outerDiv);
+                    document.getElementById('content_field').value='';
+
+                }
+                else{
+                    window.location.href='/user/login';
+                }
+            
+            }
 </script>

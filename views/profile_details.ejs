@@ -617,7 +617,7 @@
           
             let last_outgoing=all_outgoing[all_outgoing.length-1];
             let username=document.getElementById('username').innerText.trim();
-            console.log(last_outgoing);
+     
            
             let createdAt=last_outgoing.getAttribute('time');
             let response = await axios.get('/message/new-message', {

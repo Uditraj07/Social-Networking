@@ -63,39 +63,75 @@
             </div>
         </main>
         <div class=" h-screen w-full lg:w-4/5 p-4 hidden" id="message_box">
-            <!-- Sidebar for users -->
             <div class="w-full bg-white border-r border-gray-200">
                 <div class="p-4 border-b border-gray-200">
                     <h2 class="text-xl font-semibold">Chats</h2>
                 </div>
                 <div class="p-4 space-y-4">
-                    <!-- User List Item -->
-                    <div class="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
-                        <div class="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0"></div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-900">User 1</p>
-                            <p class="text-xs text-gray-500">Last message...</p>
+                   
+                     <%chatUsers.forEach((user)=>{%>
+                        <div class="flex items-center p-2 hover:bg-gray-100 cursor-pointer chat-boxes" data-set="<%= user.username %>" >
+                            <div class="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0 flex justify-center items-center short_name"><%= user.fname[0]+''+user.lname[0] %></div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-900 full-name"><%= user.fname+' '+user.lname %></p>
+                                <p class="text-xs text-gray-500">Last message...</p>
+                            </div>
                         </div>
-                    </div>
-                    <!-- Repeat above block for more users -->
-                    <div class="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
-                        <div class="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0"></div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-900">User 2</p>
-                            <p class="text-xs text-gray-500">Last message...</p>
-                        </div>
-                    </div>
-                    <!-- Add more users as needed -->
+                    <%})%>
+                  
                 </div>
             </div>
-        
-            <!-- Main chat area -->
+    
            
         </div>
 
 
     </div>
 </div>
+
+<div
+    class="mx-auto  flex items-center justify-center chat-container fixed right-0 sm:right-3 -bottom-full transition-all duration-300 ease-in-out h-[482px] w-full sm:w-72">
+    <div class="w-full h-full bg-white shadow-lg rounded-lg overflow-hidden flex flex-col relative">
+        <span class="absolute top-1 right-1 cursor-pointer" id="x_mark" onclick="CloseChatbox()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+        </span>
+        <!-- Header -->
+        <div class="bg-green-600 text-white p-4 flex items-center" id="message-head">
+            <div class="w-10 h-10 bg-gray-300 rounded-full mr-4 text-center flex items-center justify-center" id="short_name">
+                
+            </div>
+            <div>
+                <h2 class="text-lg font-semibold" id="full-name">
+                   
+                </h2>
+                <p class="text-sm">online</p>
+            </div>
+        </div>
+        <!-- Chat Area -->
+        <div class="flex-1 p-4 overflow-y-auto" id="chat-con">
+
+        </div>
+        <!-- Input Area -->
+        <div class="border-t border-gray-200 p-4 flex items-center bg-white">
+            <input type="text" placeholder="Type a message"
+                class="flex-1 p-2 h-12 min-h-[2.5rem] max-h-[5rem] w-72 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                id="content_field" required>
+            <button class="ml-4 p-2 bg-green-600 text-white rounded-full" onclick="sendMessage()">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M14.752 11.168l-7.72 4.05a.6.6 0 01-.86-.634l1.146-4.585-4.295-3.37a.6.6 0 01.33-1.054l4.824-.413L10.6 2.58a.6.6 0 011.092 0l2.053 4.86 4.824.413a.6.6 0 01.33 1.054l-4.295 3.37 1.146 4.585a.6.6 0 01-.86.634l-7.72-4.05z">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     let message=document.getElementById('message');
     let message_box=document.getElementById('message_box');
@@ -121,6 +157,191 @@
             das_box.classList.remove('hidden');
         }
     })
+</script>
+
+<script>
+
+    let chat_boxes=document.querySelectorAll('.chat-boxes');
+    chat_boxes.forEach((chat_box)=>{
+        chat_box.addEventListener('click',(event)=>{
+            event.preventDefault();
+            let username=chat_box.getAttribute('data-set');
+            let fullname=chat_box.querySelector('.full-name').innerText.trim();
+            let short_name= chat_box.querySelector('.short_name').innerText;
+            openChatbox(fullname,short_name,username);
+        })
+    })
+
+    function openChatbox(fullname, short_name,username){
+        let chat_container = document.querySelector('.chat-container');
+        chat_container.setAttribute('data-set',username);
+        if (chat_container.classList.contains('-bottom-full')) {
+            chat_container.classList.remove('-bottom-full');
+            chat_container.classList.add('bottom-0');
+            document.getElementById('short_name').innerText=short_name;
+            document.getElementById('full-name').innerText = fullname;
+            let chat_content= document.getElementById('chat-con');
+            chat_content.innerHTML='';
+            getAllMessage(username);
+            setInterval(()=>{
+                newMessage();
+            },1000);
+        }
+        else {
+            chat_container.classList.add('-bottom-full');
+            chat_container.classList.remove('bottom-0');
+            document.getElementById('short_name').innerText = '';
+            document.getElementById('full-name').innerText = '';
+        }
+    }
+    function CloseChatbox(){
+        let chat_container = document.querySelector('.chat-container');
+        if (chat_container.classList.contains('bottom-0')) {
+            chat_container.classList.add('-bottom-full');
+            chat_container.classList.remove('bottom-0');
+            document.getElementById('short_name').innerText = '';
+            document.getElementById('full-name').innerText = '';
+        }
+       
+    }
+
+
+    function getCurrentTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+            const strTime = hours + ':' + minutesStr + ' ' + ampm;
+            return strTime;
+        }
+
+        async function sendMessage() {
+            let timeSpan = getCurrentTime();      
+            let content = document.getElementById('content_field').value;
+            let chat_container = document.querySelector('.chat-container');
+            let username=chat_container.getAttribute('data-set')
+            let message_details = { username: username, content: content }
+            let response = await axios.post('/message/add-message', message_details);
+            if (response.data.message = true) {
+
+                let chat_con = document.getElementById('chat-con');
+                const outerDiv = document.createElement('div');
+                outerDiv.classList.add('flex', 'items-start', 'justify-end', 'mb-4');
+                const innerDiv = document.createElement('div');
+                innerDiv.classList.add('bg-green-200', 'p-2', 'rounded-lg', 'shadow');
+                const messageParagraph = document.createElement('p');
+                messageParagraph.classList.add('text-sm');
+                messageParagraph.textContent = content;
+                const timestampSpan = document.createElement('span');
+                timestampSpan.classList.add('text-xs', 'text-gray-500');
+                timestampSpan.textContent = timeSpan;
+
+                innerDiv.appendChild(messageParagraph);
+                innerDiv.appendChild(timestampSpan);
+                outerDiv.appendChild(innerDiv);
+                chat_con.appendChild(outerDiv);
+                document.getElementById('content_field').value = '';
+
+            }
+            else {
+                window.location.href = '/user/login';
+            }
+        }
+        
+        async function getAllMessage(username) {
+            try {
+                let chat_container = document.getElementById('chat-con');
+                
+                let response = await axios.get('/message/get-all-messages', {
+                    headers: {
+                        'username': username
+                    }
+                });
+                if (response.data.message === true) {
+                    let message_details = response.data.all_messages;
+                    message_details.forEach((message) => {
+                        if (message.Sender.username === username) {
+                            let messageContainer = createIncominggMessageElement(message.content, message.Sender, message.createdAt);
+                            chat_container.appendChild(messageContainer);
+                        }
+                        else {
+                            let messageContainer = createOutgoingMessageElement(message.content, message.createdAt);
+                            chat_container.appendChild(messageContainer);
+                        }
+                    })                   
+                }
+                else {
+                    window.location.href = '/user/login';
+                }
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+        }
+        
+
+        function createIncominggMessageElement(message, Sender, createdAt) {
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('flex', 'items-start', 'mb-4', 'outgoing');
+            messageContainer.setAttribute('time', createdAt);
+            const userIconContainer = document.createElement('div');
+            userIconContainer.classList.add('mr-4', 'w-10', 'h-10', 'bg-gray-300', 'rounded-full', 'flex', 'justify-center', 'items-center', 'p-2');
+            userIconContainer.textContent = Sender.fname[0] + '' + Sender.lname[0];
+            const messageContentContainer = document.createElement('div');
+            messageContentContainer.classList.add('bg-white', 'p-2', 'rounded-lg', 'shadow');
+            const messageContent = document.createElement('p');
+            messageContent.classList.add('text-sm');
+            messageContent.textContent = message;
+            const messageTimestamp = document.createElement('span');
+            messageTimestamp.classList.add('text-xs', 'text-gray-500');
+            messageTimestamp.textContent = new Date(createdAt).toLocaleString();
+            messageContentContainer.appendChild(messageContent);
+            messageContentContainer.appendChild(messageTimestamp);
+            messageContainer.appendChild(userIconContainer);
+            messageContainer.appendChild(messageContentContainer);
+            return messageContainer;
+        }
+        function createOutgoingMessageElement(message, createdAt) {
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('flex', 'items-start', 'justify-end', 'mb-4');
+            const messageContentContainer = document.createElement('div');
+            messageContentContainer.classList.add('bg-green-200', 'p-2', 'rounded-lg', 'shadow');
+            const messageContent = document.createElement('p');
+            messageContent.classList.add('text-sm');
+            messageContent.textContent = message;
+            const messageTimestamp = document.createElement('span');
+            messageTimestamp.classList.add('text-xs', 'text-gray-500');
+            messageTimestamp.textContent = new Date(createdAt).toLocaleString();
+            messageContentContainer.appendChild(messageContent);
+            messageContentContainer.appendChild(messageTimestamp);
+            messageContainer.appendChild(messageContentContainer);
+            return messageContainer;
+        }
+        async function newMessage() {
+            let all_outgoing = document.querySelectorAll('.outgoing');
+
+            let chat_box = document.querySelector('.chat-container');
+            let username = chat_box.getAttribute('data-set')
+            let last_outgoing = all_outgoing[all_outgoing.length - 1];
+
+
+            let createdAt = last_outgoing.getAttribute('time');
+            let response = await axios.get('/message/new-message', {
+                headers: {
+                    'username': username,
+                    'createdAt': createdAt
+                }
+            });
+
+            if (response.data.message == true && response.data.new_message != null) {
+                let new_message = response.data.new_message;
+                let messageContainer = createIncominggMessageElement(new_message.content, new_message.Sender, new_message.createdAt);
+                let chat_container = document.getElementById('chat-con');
+                chat_container.appendChild(messageContainer);
+            }
+        }
 </script>
 
 </body>

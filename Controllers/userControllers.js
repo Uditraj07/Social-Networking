@@ -7,9 +7,12 @@ const Blog = require('../Models/blogModel');
 const Follow = require('../Models/followersModel')
 const Like = require('../Models/likeModels');
 const DisLike = require('../Models/dislikeModel');
-const Message=require('../Models/messageModel');
-const { where } = require('sequelize');
+const Message = require('../Models/messageModel');
+const Sequelize = require('sequelize');
+
+
 const { Op } = require('sequelize');
+
 dotenv.config();
 
 exports.signin = async (req, res, next) => {
@@ -144,26 +147,7 @@ exports.userDetails = async (req, res, next) => {
             }]
         });
 
-        const all_messages = await Message.findAll({
-                where: {
-                    [Op.or]: [
-                        {
-                            sender_id: userId,
-                            receiver_id: receiverId
-                        },
-                        {
-                            sender_id: receiverId,
-                            receiver_id: userId
-                        }
-                    ]
-                },
-                include: [
-                    { model: User, as: 'Sender', attributes: ['username'] },
-                    { model: User, as: 'Receiver', attributes: ['username'] }
-                ],
-            attributes: ['id', 'createdAt', 'content'],
-            order: [['createdAt', 'ASC']]
-        });
+       
         res.render('profile_details', {
             cookies: req.cookies,
             userDetails: userDetails,
@@ -172,7 +156,6 @@ exports.userDetails = async (req, res, next) => {
             totalFollowing: totalFollowing,
             currentUserFollowing: currentUserFollowing,
             isSame: isSame,
-            all_messages:all_messages
         });
 
     } catch (error) {
@@ -201,12 +184,36 @@ exports.dashboard = async (req, res, next) => {
                 where: { UserId: user_id }
             }]
         });
+        const chats =await Message.findAll({
+            where: {
+                [Op.or]: [
+                    { sender_id: user_id },
+                    { receiver_id: user_id }
+                ]
+            },
+            attributes: [
+                [Sequelize.literal('DISTINCT CASE WHEN sender_id != ' + user_id + ' THEN sender_id ELSE receiver_id END'), 'user_id']
+            ],
+            raw: true
+        });
+        const uniqueUserIds = chats.map(row => row.user_id);
+
+        const chatUsers = await User.findAll({
+            where: {
+                id: {
+                    [Op.in]: uniqueUserIds
+                }
+            },
+            attributes: [ 'username', 'fname','lname'] 
+        });
+       
         res.render('dashboard', {
             cookies: req.cookies,
             totalPosts,
             totalFollowers,
             totalLikes,
             totalDisLikes,
+            chatUsers,
         });
         
     } catch (error) {

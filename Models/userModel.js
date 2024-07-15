@@ -44,6 +44,10 @@ const User = sequelize.define('User', {
         allowNull: false,
         defaultValue: false
     },
+    isLogin: {
+        type: DataTypes.TINYINT,
+        allowNull: false,
+    },
   
 }, {
     timestamps: true

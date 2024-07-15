@@ -6,7 +6,7 @@ const path = require('path');
 const { getUserId, setUserId } = require('./Middleware/auth'); 
 const sequelize = require('./utils/database');
 const cors = require('cors');
-const { Sequelize } = require('sequelize');
+const { Sequelize, where } = require('sequelize');
 const socketIo = require('socket.io');
 const http = require('http');
 
@@ -41,11 +41,12 @@ const Like = require('./Models/likeModels');
 const Dislike = require('./Models/dislikeModel');
 const Follow = require('./Models/followersModel');
 const Message = require('./Models/messageModel');
+const { userAuth } = require('./Filters/userAuth');
 
 
 app.set('view engine', 'ejs');
 
-app.get('/', async (req, res) => {
+app.get('/',userAuth, async (req, res) => {
     try {
         const blogs = await Blog.findAll({
             attributes: {
@@ -134,6 +135,47 @@ Message.belongsTo(User, { foreignKey: 'receiver_id', as: 'Receiver'});
 sequelize.sync();
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server is running at ${PORT}`);
+});
+
+const messageController = require('./Controllers/messageController');
+const { timeStamp } = require('console');
+
+io.on('connection', async (socket) => {
+    let token = socket.handshake.auth.token;
+
+    let userId = getUserId(token);
+    
+    let LogedInUser = await User.findOne({
+    where: {
+        id: userId
+    },
+    attributes: { exclude: ['id', 'password'] } 
+});
+    
+  await User.update({ isLogin: 1 }, {
+        where: {
+            id: userId
+        }
+    });
+    socket.broadcast.emit('UserLoggedIn', { username: LogedInUser.dataValues.username });
+    
+    socket.on('message', async (message) => {
+        message.user_id = userId;
+        let response = await messageController.addMessage({ body: message });
+        if (response) {
+            
+            socket.broadcast.emit('message_added', { message_id: response.dataValues.id, content: message.content, sender: LogedInUser, timeStamp: response.dataValues.createdAt,receiver:message.username });
+        }
+        
+    })
+    socket.on('disconnect', async () => {
+        await User.update({ isLogin: 0 }, {
+        where: {
+            id: userId
+        }
+        });
+        socket.broadcast.emit('UserLoggedOut', {username:LogedInUser.dataValues.username});
+    });
 });

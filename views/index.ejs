@@ -279,4 +279,15 @@
         setInterval(updateTimeAgo, 1000);
     </script>
 
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <script>
+        const socket = io({
+            auth: {
+                token: '<%= cookies.user_id%>'
+            }
+        });
+    </script>
+    
+
     <%- include('includes/footer') %>

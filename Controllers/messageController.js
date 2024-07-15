@@ -3,11 +3,11 @@ const User = require('../Models/userModel');
 const Message = require('../Models/messageModel');
 const { Op } = require('sequelize');
 
-exports.addMessage = async (req, res, next) => {
-   try {
-       let message = req.body;
-        const token = req.cookies.user_id;
-        const userId = getUserId(token);
+exports.addMessage = async ({body}) => {
+    try {
+    
+       let message = body;
+        const userId = message.user_id;
        const Receiver = await User.findOne({
            where: {
                username: message.username
@@ -15,12 +15,12 @@ exports.addMessage = async (req, res, next) => {
        });
        let message_details = { sender_id: userId, receiver_id: Receiver.dataValues.id, content: message.content };
        let response = await Message.create(message_details);
-       if (response) {
-           res.json({message:true})
-       }
-       else {
-           res.send("Internal Server issues please try after sometime");
-       }
+        if (response) {
+           return response
+        }
+        else {
+            return false;
+        }
        
    } catch (error) {
        console.log(error);

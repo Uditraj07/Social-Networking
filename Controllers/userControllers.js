@@ -204,7 +204,7 @@ exports.dashboard = async (req, res, next) => {
                     [Op.in]: uniqueUserIds
                 }
             },
-            attributes: [ 'username', 'fname','lname'] 
+            attributes: [ 'username', 'fname','lname','isLogin'] 
         });
        
         res.render('dashboard', {

@@ -80,7 +80,7 @@
                             <div class="ml-4">
                                 <p class="text-sm font-medium text-gray-900 full-name">
                                     <%= user.fname+' '+user.lname %></p>
-                                <p class="text-xs text-gray-500" >Last message...</p>
+                                <p class="text-xs text-gray-500 last_message" >Last message...</p>
                             </div>
                         </div>
                     <%})%>
@@ -106,7 +106,7 @@
         </span>
         <!-- Header -->
         <div class="bg-green-600 text-white p-4 flex items-center" id="message-head">
-            <div class="w-10 h-10 bg-gray-300 rounded-full mr-4 text-center flex items-center justify-center" id="short_name">
+            <div class="w-10 h-10 bg-gray-300 rounded-full mr-4 text-center flex items-center justify-center cursor-pointer" id="short_name">
                 
             </div>
             <div>
@@ -214,6 +214,9 @@
             chat_container.classList.remove('-bottom-full');
             chat_container.classList.add('bottom-0');
             document.getElementById('short_name').innerText=short_name;
+            document.getElementById('short_name').addEventListener('click',()=>{
+                window.location.href=`/user/user-details?username=${username}`;
+            })
             document.getElementById('full-name').innerText = fullname;
             if(online_status){
                 document.getElementById('online_status').innerText='online';
@@ -360,7 +363,13 @@
 
         socket.on('message_added', (data) => {
             let username = '<%=cookies.user_name%>';
-            if ( data.sender.username === document.querySelector('.chat-container').getAttribute('data-set').trim() && username===data.receiver) {
+            let result=document.getElementById(`${data.sender.username}`)
+            if(username === data.receiver){
+                let parent_res=result.parentElement.parentElement;
+                
+                result.parentElement.parentElement.querySelector('.last_message').innerText=data.content;
+            }
+            if ( data.sender.username === document.querySelector('.chat-container').getAttribute('data-set')  && username===data.receiver) {
                newMessage(data);
             }
                    

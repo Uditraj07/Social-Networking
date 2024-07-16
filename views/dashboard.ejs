@@ -287,6 +287,7 @@
              innerDiv.appendChild(timestampSpan);
              outerDiv.appendChild(innerDiv);
              chat_con.appendChild(outerDiv);
+             scrollToBottom();
              document.getElementById('content_field').value = '';
             }
            
@@ -312,7 +313,8 @@
                             let messageContainer = createOutgoingMessageElement(message.content, message.createdAt);
                             chat_container.appendChild(messageContainer);
                         }
-                    })                   
+                    }) 
+                    scrollToBottom();                  
                 }
                 else {
                     window.location.href = '/user/login';
@@ -378,6 +380,13 @@
             let messageContainer = createIncominggMessageElement(data.content, data.sender, data.timeStamp);
             let chat_container = document.getElementById('chat-con');
             chat_container.appendChild(messageContainer);
+            scrollToBottom();
+        }
+
+
+        function scrollToBottom() {
+            let chatContainer = document.getElementById('chat-con');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 </script>
 

@@ -551,6 +551,7 @@
                 innerDiv.appendChild(timestampSpan);
                 outerDiv.appendChild(innerDiv);
                 chat_con.appendChild(outerDiv);
+                scrollToBottom();
                 document.getElementById('content_field').value = '';
             }
         async function getAllMessage() {
@@ -575,7 +576,7 @@
                         }
                     })
                     
-                            
+                    scrollToBottom();        
                 }
                 else{
                      window.location.href='/user/login';
@@ -638,7 +639,12 @@
             let messageContainer= createIncominggMessageElement(data.content,data.sender, data.timeStamp);
             let chat_container = document.getElementById('chat-con');
             chat_container.appendChild(messageContainer);
+            scrollToBottom()
         }
+        function scrollToBottom() {
+                let chatContainer = document.getElementById('chat-con');
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
         
 </script>
 <%- include('includes/footer') %>

@@ -100,7 +100,7 @@
                 <p class="font-semibold capitalize">
                     <%= userDetails.fname + ' ' + userDetails.lname %>
                 </p>
-                <p class="text-gray-500 text-xs sm:text-sm">Followed by laxmi_nigam90</p>
+                <p class="text-gray-500 text-xs sm:text-sm">mutual friend</p>
             </div>
         </div>
     </div>
@@ -222,10 +222,10 @@
         </div>
 
         <div class="overflow-y-auto h-full sm:h-64">
-            <div class="flex flex-col justify-center items-center">
+            <div class="flex flex-col justify-center items-center" id="all_follower_in_container" >
 
                 <% totalFollowers.forEach(follower=> { %>
-                    <div class="flex items-center justify-between py-2 border-b w-full">
+                    <div class="flex items-center justify-between py-2 border-b w-full" id="<%=follower.User.username%>">
                         <div class="flex items-center space-x-5">
                             <a
                                 class="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-red-600 flex items-center justify-center text-white">
@@ -340,7 +340,7 @@
             let total_followers = document.getElementById('total_followers');
 
             if (follow.innerText === 'Following') {
-                console.log("Hiii");
+              
                 let response = await axios.post('/follow/remove-folllower', {}, {
                     headers: {
                         'username': username
@@ -350,6 +350,10 @@
                     alert('Successfully unfollow the user');
                     follow.innerText = 'Follow';
                     total_followers.innerText = Number(total_followers.innerText) - 1;
+                    let to_whomfollow=document.getElementById('total_follower_modal');
+                    let uName = '<%= cookies.user_name %>';
+                    let userElement = to_whomfollow.querySelector(`#${uName}`);
+                    userElement.remove();
                 }
                 else {
                     window.location.href = '/user/login'
@@ -361,11 +365,11 @@
                         'username': username
                     }
                 });
-                console.log(response);
                 if (response.data.message === true) {
                     alert('Successfully followed the user');
                     follow.innerText = 'Following';
                     total_followers.innerText = Number(total_followers.innerText) + 1;
+                    createUserCard();
                 }
                 else {
                     window.location.href = '/user/login'
@@ -377,7 +381,34 @@
         }
     });
 
+    function createUserCard() {
 
+            const userName = '<%= cookies.user_name %>';
+            const userFname = '<%= cookies.user_fname %>';
+            const userLname = '<%= cookies.user_lname %>';
+
+            const userCard = document.createElement('div');
+            userCard.className = 'flex items-center justify-between py-2 border-b w-full';
+            userCard.id = userName;
+            const userDetails = document.createElement('div');
+            userDetails.className = 'flex items-center space-x-5';
+            const userAvatar = document.createElement('a');
+            userAvatar.className = 'h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-red-600 flex items-center justify-center text-white';
+            userAvatar.textContent = userFname.charAt(0).toUpperCase() + userLname.charAt(0).toUpperCase();
+            const userInfo = document.createElement('div');
+            const userNamePara = document.createElement('p');
+            userNamePara.className = 'font-bold user_name';
+            userNamePara.textContent = userName;
+            const userBio = document.createElement('p');
+            userBio.className = 'text-sm text-gray-500';
+            userBio.textContent = 'no bio';
+            userInfo.appendChild(userNamePara);
+            userInfo.appendChild(userBio);
+            userDetails.appendChild(userAvatar);
+            userDetails.appendChild(userInfo);
+            userCard.appendChild(userDetails);
+            document.getElementById('all_follower_in_container').appendChild(userCard);
+        }
     function toggleMenu(event, id) {
             event.stopPropagation();
             const menu = document.getElementById(`menu-${id}`);

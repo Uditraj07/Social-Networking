@@ -29,7 +29,9 @@ exports.signin = async (req, res, next) => {
             } else {
                 let token = setUserId(user_info.dataValues.id);
                 res.cookie('user_id', token);
-                res.cookie('user_name',user_info.dataValues.username)
+                res.cookie('user_name', user_info.dataValues.username);
+                res.cookie('user_fname', user_info.dataValues.fname);
+                res.cookie('user_lname', user_info.dataValues.lname);
                 return res.redirect('/')
             }
         } else {

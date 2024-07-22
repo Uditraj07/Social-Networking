@@ -215,6 +215,8 @@
             <h2 class="text-xl font-bold">Followers</h2>
             <button class="text-gray-600" onclick="closeModal()">&times;</button>
         </div>
+  
+
 
         <div class="mb-4">
             <input type="text" placeholder="Search"
@@ -237,7 +239,7 @@
                                     <%= follower.User.username %>
                                 </p>
                                 <p class="text-sm text-gray-500">
-                                    no bio
+                                    <%= follower.User.fname+' '+follower.User.lname %>
                                 </p>
                             </div>
                         </div>
@@ -280,7 +282,7 @@
                                     <%= following.Follower.username %>
                                 </p>
                                 <p class="text-sm text-gray-500">
-                                    no bio
+                                    <%= following.Follower.fname+' '+ following.Follower.lname  %>
                                 </p>
                             </div>
                         </div>
@@ -401,7 +403,7 @@
             userNamePara.textContent = userName;
             const userBio = document.createElement('p');
             userBio.className = 'text-sm text-gray-500';
-            userBio.textContent = 'no bio';
+            userBio.textContent = userFname+' '+userLname;
             userInfo.appendChild(userNamePara);
             userInfo.appendChild(userBio);
             userDetails.appendChild(userAvatar);
@@ -570,7 +572,7 @@
                 const outerDiv = document.createElement('div');
                 outerDiv.classList.add('flex', 'items-start', 'justify-end', 'mb-4');
                 const innerDiv = document.createElement('div');
-                innerDiv.classList.add('bg-green-200', 'p-2', 'rounded-lg', 'shadow');
+                innerDiv.classList.add('bg-green-200', 'p-2', 'rounded-lg', 'shadow', 'max-w-[65%]');
                 const messageParagraph = document.createElement('p');
                 messageParagraph.classList.add('text-sm');
                 messageParagraph.textContent = content;
@@ -626,7 +628,7 @@
                 userIconContainer.classList.add('mr-4', 'w-10', 'h-10', 'bg-gray-300', 'rounded-full', 'flex', 'justify-center', 'items-center', 'p-2');
                 userIconContainer.textContent = Sender.fname[0] + '' + Sender.lname[0];
                 const messageContentContainer = document.createElement('div');
-                messageContentContainer.classList.add('bg-white', 'p-2', 'rounded-lg', 'shadow');
+                messageContentContainer.classList.add('bg-white', 'p-2', 'rounded-lg', 'shadow', 'max-w-[65%]');
                 const messageContent = document.createElement('p');
                 messageContent.classList.add('text-sm');
                 messageContent.textContent = message;
@@ -643,7 +645,7 @@
                 const messageContainer = document.createElement('div');
                 messageContainer.classList.add('flex', 'items-start', 'justify-end', 'mb-4');
                 const messageContentContainer = document.createElement('div');
-                messageContentContainer.classList.add('bg-green-200', 'p-2', 'rounded-lg', 'shadow');
+                messageContentContainer.classList.add('bg-green-200', 'p-2', 'rounded-lg', 'shadow', 'max-w-[65%]');
                 const messageContent = document.createElement('p');
                 messageContent.classList.add('text-sm');
                 messageContent.textContent = message;

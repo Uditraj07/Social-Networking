@@ -57,7 +57,7 @@ app.get('/',userAuth, async (req, res) => {
                 attributes: ['username', 'fname', 'lname']
             }],
             order: [
-                ['createdAt', 'DESC'] // Assuming you want to sort by creation date
+                ['createdAt', 'DESC'] 
             ]
         });
         const token = req.cookies.user_id;

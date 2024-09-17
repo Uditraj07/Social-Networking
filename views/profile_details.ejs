@@ -192,18 +192,19 @@
             
         </div>
         <!-- Input Area -->
-        <div class="border-t border-gray-200 p-4 flex items-center bg-white">
+        <div class="border-t border-gray-200 p-4  bg-white">
+           <form action="#" class="flex items-center">
             <input type="text" placeholder="Type a message"
                 class="flex-1 p-2 h-12 min-h-[2.5rem] max-h-[5rem] w-72 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                id="content_field" required>
-            <button class="ml-4 p-2 bg-green-600 text-white rounded-full" onclick="sendMessage()">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
+                id="content_field"  >
+            <button class="ml-4 p-2 bg-green-600 text-white rounded-full" type="button" onclick="sendMessage()">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M14.752 11.168l-7.72 4.05a.6.6 0 01-.86-.634l1.146-4.585-4.295-3.37a.6.6 0 01.33-1.054l4.824-.413L10.6 2.58a.6.6 0 011.092 0l2.053 4.86 4.824.413a.6.6 0 01.33 1.054l-4.295 3.37 1.146 4.585a.6.6 0 01-.86.634l-7.72-4.05z">
                     </path>
                 </svg>
             </button>
+           </form>
         </div>
     </div>
 </div>
@@ -213,7 +214,7 @@
     <div class="bg-white w-96 rounded-lg shadow-lg p-4">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">Followers</h2>
-            <button class="text-gray-600" onclick="closeModal()">&times;</button>
+            <button class="text-gray-600 text-xl font-bold" onclick="closeModal()">&times;</button>
         </div>
   
 
@@ -258,7 +259,7 @@
     <div class="bg-white w-96 rounded-lg shadow-lg p-4">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">Following</h2>
-            <button class="text-gray-600" onclick="closeFollowingModal()">&times;</button>
+            <button class="text-gray-600 text-xl font-bold" onclick="closeFollowingModal()">&times;</button>
         </div>
 
         <div class="mb-4">
